@@ -1,60 +1,68 @@
 #pragma once
 #include <list>
 
-class Composite
+class I_Composite
 {
+protected:
+	int Value;
 public:
+	virtual void CalculateValue() = 0;
 	virtual int GetValue() const = 0;
-	virtual void Add(Composite* Elem) {}
-	virtual void Delete(Composite* Elem) {}
-	virtual ~Composite() {}
+	virtual void Add(I_Composite* Elem) {}
+	virtual void Delete(I_Composite* Elem) {}
 };
 
 
-class Element : public Composite
+class Element : public I_Composite
 {
-private:
-
-	int Value;
-
 public:
-	virtual ~Element() {}
-	Element(int init_Value = 0)
-		: Value(init_Value) {}
+
+	Element(int init_Value = 0) 
+	{
+		Value = init_Value;
+	}
 
 	virtual int GetValue() const override
 	{
 		return Value;
 	}
+
+	virtual void CalculateValue() {}
 };
 
 
-class Box : public Composite
+class Box : public I_Composite
 {
 private:
 
-	std::list<Composite*> Children;
+	std::list<I_Composite*> Children;
 
 public:
 
-	virtual ~Box() {}
-	virtual void Add(Composite* Elem)
+	virtual void Add(I_Composite* Elem)
 	{
 		Children.push_back(Elem);
 	}
 
-	void Delete(Composite* Elem)
+	void Delete(I_Composite* Elem)
 	{
 		Children.erase(std::find(Children.begin(), Children.end(), Elem));
 	}
 
-	virtual int GetValue() const override
+	virtual void CalculateValue() 
 	{
 		int Val = 0;
-		for (const Composite* Elem : Children)
+		for (I_Composite* Elem : Children)
 		{
+			Elem->CalculateValue();
 			Val += Elem->GetValue();
 		}
-		return Val;
+		Value = Val;
 	}
+
+	virtual int GetValue() const override
+	{
+		return Value;
+	}
+
 };

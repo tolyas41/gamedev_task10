@@ -13,26 +13,27 @@ int main()
 		std::cout << "<Circle a>";
 		a.DisplayData();
 
-		Prototype* b = a.Clone();
+		std::unique_ptr<I_Prototype> b = a.Clone();
 		std::cout << "\n<Circle b>";
 		b->DisplayData();
-		delete b;
 	}
 
 
 	{
 		//Composite
 
-		Composite* a = new Element(1300);
-		Composite* b = new Element(3);
-		Composite* c = new Element(5);
-		Composite* A = new Box();
-		Composite* B = new Box();
+		I_Composite* a = new Element(1300);
+		I_Composite* b = new Element(3);
+		I_Composite* c = new Element(5);
+		I_Composite* A = new Box();
+		I_Composite* B = new Box();
 		A->Add(a);
 		A->Add(B);
 		B->Add(b);
 		B->Add(c);
+		B->CalculateValue();
 		std::cout << "\nB Value : " << B->GetValue();
+		A->CalculateValue();
 		std::cout << "\nA Value : " << A->GetValue();
 		delete a;
 		delete b;
@@ -47,13 +48,14 @@ int main()
 
 		std::vector<float> nums = { 1.f, 5.f, 2.4f, 8.2f, 2.f, 10.f };
 
-		VectorOfNumbers* a = new VectorOfNumbers(new Addition);
-		a->SetNumbers(nums);
-		a->PrintStrategyResult();
+		Addition addition;
+		VectorOfNumbers a(&addition);
+		a.SetNumbers(nums);
+		a.PrintStrategyResult();
 
-		a->SetStrategy(new Multiplication);
-		a->PrintStrategyResult();
-		delete a;
+		Multiplication multiplication;
+		a.SetStrategy(&multiplication);
+		a.PrintStrategyResult();
 	}
 
 	return 0;

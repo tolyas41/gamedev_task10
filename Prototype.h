@@ -1,16 +1,18 @@
 #pragma once
 #include <iostream>
+#include <memory>
 
-class Prototype
+class I_Prototype
 {
 public:
 
-	virtual Prototype* Clone() const = 0;
+	virtual std::unique_ptr<I_Prototype> Clone() const = 0;
 	virtual void DisplayData() const = 0;
+	virtual ~I_Prototype() {}
 };
 
 
-class Circle : public Prototype
+class Circle : public I_Prototype
 {
 private:
 
@@ -20,18 +22,29 @@ private:
 
 public:
 
+	virtual ~Circle() {}
+
 	Circle(int init_Radius = 0, float init_PivotX = 0, float init_PivotY = 0)
 		: Radius(init_Radius), PivotX(init_PivotX), PivotY(init_PivotY) {}
+
 	Circle(const Circle& Source)
 	{
-		this->Radius = Source.Radius;
-		this->PivotX = Source.PivotX;
-		this->PivotY = Source.PivotY;
+		Radius = Source.Radius;
+		PivotX = Source.PivotX;
+		PivotY = Source.PivotY;
 	}
 
-	virtual Prototype* Clone() const override
+	Circle& operator=(const Circle& Source)
 	{
-		return new Circle(*this);
+		Radius = Source.Radius;
+		PivotX = Source.PivotX;
+		PivotY = Source.PivotY;
+		return *this;
+	}
+
+	virtual std::unique_ptr<I_Prototype> Clone() const override
+	{
+		return std::make_unique<Circle>(*this);
 	}
 
 	virtual void DisplayData() const override

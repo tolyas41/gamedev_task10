@@ -2,12 +2,21 @@
 #include <vector>
 #include <string>
 
-class Strategy
+
+class I_Strategy
 {
+protected:
+
+	std::string Name;
+
 public:
-	virtual ~Strategy() {}
-	virtual float Operation(const std::vector<float> Numbers) = 0;
-	virtual std::string GetName() const = 0;
+
+	virtual float DoOperation(const std::vector<float> Numbers) = 0;
+
+	std::string GetName() const
+	{
+		return Name;
+	}
 };
 
 
@@ -15,21 +24,18 @@ class VectorOfNumbers
 {
 private:
 
-	Strategy* CurrentStrategy;
+	I_Strategy* CurrentStrategy;
 	std::vector<float> Numbers;
 
 public:
 
-	VectorOfNumbers(Strategy* init_CurrentStrategy = nullptr) 
-		: CurrentStrategy(init_CurrentStrategy) {}
-	~VectorOfNumbers()
+	VectorOfNumbers(I_Strategy* init_CurrentStrategy)
 	{
-		delete this->CurrentStrategy;
+		CurrentStrategy = init_CurrentStrategy;
 	}
 
-	void SetStrategy(Strategy* strategy)
+	void SetStrategy(I_Strategy* strategy)
 	{
-		delete this->CurrentStrategy;
 		CurrentStrategy = strategy;
 	}
 
@@ -40,22 +46,21 @@ public:
 
 	void PrintStrategyResult() const
 	{
-		std::cout << "\nResult for " << CurrentStrategy->GetName() << " is : " << CurrentStrategy->Operation(Numbers) << std::endl;
+		std::cout << "\nResult for " << CurrentStrategy->GetName() << " is : " << CurrentStrategy->DoOperation(Numbers) << std::endl;
 	}
 };
 
 
-class Addition : public Strategy
+class Addition : public I_Strategy
 {
-private:
-
-	std::string Name = "Addition";
-
 public:
 
-	virtual ~Addition() {}
+	Addition()
+	{
+		Name = "Addition";
+	}
 
-	virtual float Operation(const std::vector<float> Numbers) override
+	virtual float DoOperation(const std::vector<float> Numbers) override
 	{
 		float Result = 0;
 		for (float n : Numbers)
@@ -64,24 +69,18 @@ public:
 		}
 		return Result;
 	}
-
-	virtual std::string GetName() const
-	{
-		return Name;
-	}
 };
 
-class Multiplication : public Strategy
+class Multiplication : public I_Strategy
 {
-private:
-
-	std::string Name = "Multiplication";
-
 public:
 
-	virtual ~Multiplication() {}
+	Multiplication()
+	{
+		Name = "Multiplication";
+	}
 
-	virtual float Operation(const std::vector<float> Numbers) override
+	virtual float DoOperation(const std::vector<float> Numbers) override
 	{
 		float Result = Numbers.at(0);
 		for (float n : Numbers)
@@ -91,9 +90,5 @@ public:
 		return Result;
 	}
 
-	virtual std::string GetName() const
-	{
-		return Name;
-	}
 };
 
